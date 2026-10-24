@@ -77,12 +77,23 @@ async function providerRoutes(req,env,path,u){
   o.id offer_id,o.amount_minor,o.status offer_status FROM invitations i JOIN requests r ON r.id=i.request_id LEFT JOIN offers o ON o.invitation_id=i.id
   WHERE i.provider_id=? ORDER BY i.created_at DESC LIMIT 100`).bind(p.id).all();return out({invitations:r.results||[]});
  }
+ if(path==='/api/provider/jobs'&&req.method==='GET'){
+  const p=await env.DB.prepare('SELECT id FROM providers WHERE user_id=?').bind(u.id).first();if(!p)return out({jobs:[]});
+  const r=await env.DB.prepare(`SELECT j.id,j.price_minor,j.status,j.created_at,r.category_slug,r.county,r.locality,r.description
+    FROM jobs j JOIN requests r ON r.id=j.request_id WHERE j.provider_id=? ORDER BY j.created_at DESC LIMIT 100`).bind(p.id).all();
+  return out({jobs:r.results||[]});
+ }
  if(path==='/api/provider/offers'&&req.method==='POST'){
   const b=await body(req);const amount=Number(b.amountMinor);if(typeof b.invitationId!=='string'||!Number.isSafeInteger(amount)||amount<100||amount>1000000000||!validText(b.message,8,1500))return fail('Ofertă invalidă');
   const p=await env.DB.prepare('SELECT * FROM providers WHERE user_id=?').bind(u.id).first();if(!p||p.status!=='APPROVED')return fail('Prestator neaprobat',403);
   const inv=await env.DB.prepare(`SELECT i.id,r.status FROM invitations i JOIN requests r ON r.id=i.request_id WHERE i.id=? AND i.provider_id=?`).bind(b.invitationId,p.id).first();
   if(!inv||!['OPEN','MATCHED'].includes(inv.status))return fail('Invitație indisponibilă',409);
-  try{const oid=id();await env.DB.prepare(`INSERT INTO offers(id,invitation_id,amount_minor,message) VALUES(?,?,?,?)`).bind(oid,inv.id,amount,b.message.trim()).run();return out({id:oid},201)}catch{return fail('Există deja o ofertă pentru această invitație',409)}
+  try{const oid=id();const res=await env.DB.prepare(`INSERT INTO offers(id,invitation_id,amount_minor,message)
+   SELECT ?,i.id,?,? FROM invitations i JOIN requests r ON r.id=i.request_id JOIN providers p ON p.id=i.provider_id
+   WHERE i.id=? AND i.provider_id=? AND p.status='APPROVED' AND r.status IN ('OPEN','MATCHED')
+   ON CONFLICT DO NOTHING`).bind(oid,amount,b.message.trim(),inv.id,p.id).run();
+   if(!res.meta?.changes)return fail('Invitație inactivă ori ofertă duplicată',409);return out({id:oid},201)
+  }catch{return fail('Nu putem trimite oferta',409)}
  }
  return null;
 }
@@ -96,7 +107,7 @@ async function requestRoutes(req,env,path,u){
  }
  if(path==='/api/requests'&&req.method==='GET'){
   const r=await env.DB.prepare('SELECT id,category_slug,county,locality,description,status,created_at FROM requests WHERE customer_id=? ORDER BY created_at DESC LIMIT 100').bind(u.id).all();
-  const offers=await env.DB.prepare(`SELECT o.id,o.amount_minor,o.message,o.status,i.request_id FROM offers o JOIN invitations i ON i.id=o.invitation_id JOIN requests r ON r.id=i.request_id WHERE r.customer_id=? ORDER BY o.created_at DESC LIMIT 100`).bind(u.id).all();
+  const offers=await env.DB.prepare(`SELECT o.id,o.amount_minor,o.message,o.status,i.request_id,p.business_name FROM offers o JOIN invitations i ON i.id=o.invitation_id JOIN providers p ON p.id=i.provider_id JOIN requests r ON r.id=i.request_id WHERE r.customer_id=? ORDER BY o.created_at DESC LIMIT 100`).bind(u.id).all();
   const jobs=await env.DB.prepare('SELECT id,request_id,price_minor,status FROM jobs WHERE customer_id=? ORDER BY created_at DESC LIMIT 100').bind(u.id).all();return out({requests:r.results||[],offers:offers.results||[],jobs:jobs.results||[]});
  }
  let m=path.match(/^\/api\/requests\/([^/]+)\/accept$/);
@@ -106,7 +117,7 @@ async function requestRoutes(req,env,path,u){
   if(!offer||offer.customer_id!==u.id)return fail('Ofertă indisponibilă',404);
   if(offer.status!=='SENT'||offer.provider_status!=='APPROVED'||!['OPEN','MATCHED'].includes(offer.request_status))return fail('Oferta nu mai poate fi acceptată',409);
   const jid=id();const changes=await env.DB.batch([
-   env.DB.prepare(`UPDATE requests SET status='ASSIGNED',accepted_offer_id=? WHERE id=? AND customer_id=? AND status IN ('OPEN','MATCHED') AND accepted_offer_id IS NULL`).bind(offer.id,m[1],u.id),
+   env.DB.prepare(`UPDATE requests SET status='ASSIGNED',accepted_offer_id=? WHERE id=? AND customer_id=? AND status IN ('OPEN','MATCHED') AND accepted_offer_id IS NULL AND EXISTS (SELECT 1 FROM offers o JOIN invitations i ON i.id=o.invitation_id JOIN providers p ON p.id=i.provider_id WHERE o.id=? AND i.request_id=requests.id AND o.status='SENT' AND p.status='APPROVED')`).bind(offer.id,m[1],u.id,offer.id),
    env.DB.prepare(`INSERT INTO jobs(id,request_id,offer_id,customer_id,provider_id,price_minor)
      SELECT ?,r.id,?,r.customer_id,?,? FROM requests r WHERE r.id=? AND r.accepted_offer_id=?
      ON CONFLICT(request_id) DO NOTHING`).bind(jid,offer.id,offer.provider_id,offer.amount_minor,m[1],offer.id),
