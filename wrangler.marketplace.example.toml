@@ -1,0 +1,17 @@
+# COPY to wrangler.marketplace.toml after creating a SEPARATE D1 staging database.
+# Run `npx wrangler --config wrangler.marketplace.toml deploy` only after migrations.
+name = "lafix-marketplace-staging"
+main = "apps/api/worker.mjs"
+compatibility_date = "2026-10-24"
+workers_dev = true
+
+[assets]
+directory = "./apps/site"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lafix-marketplace-staging"
+database_id = "REPLACE_WITH_DATABASE_UUID"
+migrations_dir = "infra/d1"

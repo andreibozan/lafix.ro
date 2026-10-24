@@ -1,0 +1,11 @@
+<!doctype html><html lang="ro"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex,nofollow"/><meta name="description" content="Administrare securizată LaFix"/><title>LaFix · Administrare</title><link rel="icon" href="favicon.svg" type="image/svg+xml"/><link rel="stylesheet" href="portal.css"/></head><body>
+<header class="toolbar"><a class="brand" href="/">↗ LaFix<span>.</span></a><nav><a href="/">Website</a><a href="/cont.html">Contul meu</a><button id="logout">Deconectare</button></nav></header>
+<main class="workspace"><div class="intro"><p class="eyebrow">LA FIX / OPERATIONS</p><h1>Panou de administrare</h1><p>Operațiuni, moderare, activitate și monetizare. Acces exclusiv utilizatorilor ADMIN.</p></div>
+<div id="notice" role="status" aria-live="polite"></div>
+<section id="locked" hidden><div class="panel"><h2>Autentificare necesară</h2><p>Conectează-te din contul tău LaFix. Accesul administrativ necesită autorizare pe server.</p><a class="btn" href="/cont.html">Autentificare →</a></div></section>
+<section id="board" hidden>
+<div class="stats" id="stats"></div>
+<div class="tabs" role="navigation" aria-label="Module administrator"><button data-tab="providers" class="chosen">Prestatori</button><button data-tab="requests">Solicitări</button><button data-tab="jobs">Lucrări</button><button data-tab="categories">Categorii</button><button data-tab="users">Utilizatori</button><button data-tab="support">Sesizări</button><button data-tab="billing">Monetizare</button><button data-tab="audit">Jurnal audit</button></div>
+<section class="panel" id="tabContent"><p>Se încarcă datele…</p></section>
+<button class="linkish" id="refresh">↻ Actualizează datele</button>
+</section></main><script src="admin.js" defer></script></body></html>
