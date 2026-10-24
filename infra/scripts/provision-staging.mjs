@@ -6,6 +6,7 @@
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, rmSync } from 'node:fs';
 
+// GitHub Actions push deployment trigger; never targets the production lafix-ro Worker.
 const DB_NAME = 'lafix-marketplace-staging';
 const WORKER_NAME = 'lafix-marketplace-staging';
 const CONFIG_PATH = 'wrangler.staging.generated.json';
