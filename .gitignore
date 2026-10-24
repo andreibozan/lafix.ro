@@ -3,3 +3,6 @@ node_modules
 .dev.vars
 .env
 wrangler.marketplace.toml
+
+# Generated locally by isolated staging deployment
+wrangler.staging.generated.json
