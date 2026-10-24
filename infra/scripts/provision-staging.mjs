@@ -21,7 +21,7 @@ function wrangler(args, capture = false) {
   if (r.stderr) process.stderr.write(r.stderr);
   if (r.error) throw r.error;
   if (r.status !== 0) throw new Error('Wrangler command failed: ' + args.slice(0, 3).join(' ') + ' (exit ' + r.status + ')');
-  return r.stdout || '';
+  return capture === 'all' ? (r.stdout || '') + '\n' + (r.stderr || '') : (r.stdout || '');
 }
 function databaseId() {
   const raw = JSON.parse(wrangler(['d1', 'list', '--json'], true));
@@ -57,7 +57,7 @@ try {
   console.log('Applying versioned migrations to staging D1 only');
   wrangler(['d1', 'migrations', 'apply', DB_NAME, '--remote', '--config', CONFIG_PATH]);
   console.log('Deploying separate staging Worker: ' + WORKER_NAME);
-  const deployOutput = wrangler(['deploy', '--config', CONFIG_PATH], true);
+  const deployOutput = wrangler(['deploy', '--config', CONFIG_PATH], 'all');
   process.stdout.write(deployOutput);
   const urls = deployOutput.match(/https:\/\/[a-z0-9.-]+\.workers\.dev/gi) || [];
   const url = urls.find(x => x.includes(WORKER_NAME + '.'));
