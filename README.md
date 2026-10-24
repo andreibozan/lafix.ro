@@ -65,3 +65,7 @@ Testează codul logic și SQL-ul într-un SQLite local, nu confirmă automat com
 ## Structură
 
 `apps/api/worker.mjs` — API; `infra/d1/0001_core.sql` — tabele; `apps/site/admin.html` + `admin.js` — dashboard; `apps/site/cont.html` + `portal.js` + `portal.css` — fluxuri utilizatori; `wrangler.marketplace.example.toml` — config staging; `tests/marketplace.test.mjs` — smoke/E2E local.
+
+## Staging D1 automatizat
+
+Workflow separat de producție: `.github/workflows/deploy-marketplace-staging.yml` și `infra/scripts/provision-staging.mjs`. Instrucțiuni de autorizare, configurare și verificare: [docs/STAGING_D1.md](docs/STAGING_D1.md). Prima execuție remote necesită GitHub Actions secrets `CLOUDFLARE_API_TOKEN` și `CLOUDFLARE_ACCOUNT_ID`; niciun token nu se pune în cod. Site-ul de producție `lafix-ro` rămâne neafectat.
