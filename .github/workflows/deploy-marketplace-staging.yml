@@ -1,0 +1,53 @@
+name: LaFix staging - D1 and Worker
+on:
+  push:
+    branches:
+      - feature/marketplace-admin-billing
+    paths:
+      - 'apps/**'
+      - 'infra/**'
+      - 'tests/**'
+      - '.github/workflows/deploy-marketplace-staging.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lafix-staging-deploy
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Validate marketplace code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - run: node --check apps/api/worker.mjs
+      - run: node --check apps/site/portal.js
+      - run: node --check apps/site/admin.js
+      - run: node --check infra/scripts/provision-staging.mjs
+      - run: node --test tests/marketplace.test.mjs
+
+  deploy:
+    name: Provision staging D1, migrate and publish separate Worker
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: lafix-staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install Wrangler
+        run: npm install --global wrangler@4
+      - name: Provision, migrate, deploy and verify STAGING ONLY
+        run: node infra/scripts/provision-staging.mjs
