@@ -1,0 +1,8 @@
+# LaFix public static website on Cloudflare Workers.
+# Deployed Worker name must match the Cloudflare dashboard project.
+name = "lafix-ro"
+compatibility_date = "2026-10-24"
+workers_dev = true
+
+[assets]
+directory = "./apps/site"
