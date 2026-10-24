@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 590 410" fill="none" role="img" aria-label="Ilustrație originală LaFix cu locuințe și servicii">
+  <path d="M42 343c83-24 141-14 211 5 80 21 165 6 295-29" stroke="#628575" stroke-width="2" stroke-dasharray="4 10"/>
+  <path d="M66 330c59-56 122-82 198-86 90-5 156 20 226 60" stroke="#628575" stroke-width="2" stroke-dasharray="4 10"/>
+  <path d="M93 339v-77l111-87 111 87v77H93Z" fill="#F8F5E9" stroke="#143E32" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m78 264 126-100 126 100" stroke="#E47F4C" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M181 339v-73a23 23 0 0 1 46 0v73" fill="#D4E8DA" stroke="#143E32" stroke-width="4"/>
+  <path d="M113 280h39v36h-39zM255 280h38v36h-38z" fill="#D7E9DD" stroke="#143E32" stroke-width="4"/>
+  <path d="M132 281v34m-18-17h37m123-17v34m-19-17h38" stroke="#143E32" stroke-width="3"/>
+  <path d="M342 337v-56l66-51 66 51v56" fill="#C8DBCE" stroke="#143E32" stroke-width="5" stroke-linejoin="round"/>
+  <path d="m330 282 78-61 78 61" stroke="#143E32" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M394 337v-44a14 14 0 0 1 28 0v44" fill="#F8F5E9" stroke="#143E32" stroke-width="4"/>
+  <path d="M88 348h395" stroke="#143E32" stroke-width="5" stroke-linecap="round"/>
+  <path d="M517 153c0 26-25 51-25 51s-25-25-25-51a25 25 0 1 1 50 0Z" fill="#D9EF87" stroke="#143E32" stroke-width="4"/>
+  <circle cx="492" cy="153" r="8" fill="#143E32"/>
+  <path d="M76 178c0-22 18-40 40-40 7-31 34-54 67-54 38 0 68 30 68 68H76Z" fill="#D9EF87" stroke="#143E32" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M109 175h111" stroke="#143E32" stroke-width="4" stroke-linecap="round"/>
+  <path d="M61 225c11-17 22-17 33 0m336 14c10-14 20-14 30 0m-257-42c7-10 14-10 21 0" stroke="#143E32" stroke-width="4" stroke-linecap="round"/>
+</svg>
