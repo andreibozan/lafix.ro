@@ -1,0 +1,24 @@
+name: Marketplace smoke tests
+on:
+  push:
+    branches: ["feature/marketplace-admin-billing"]
+  pull_request:
+    paths:
+      - 'apps/api/**'
+      - 'apps/site/admin*'
+      - 'apps/site/cont.html'
+      - 'apps/site/portal*'
+      - 'infra/d1/**'
+      - 'tests/**'
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check apps/api/worker.mjs
+      - run: node --check apps/site/admin.js
+      - run: node --check apps/site/portal.js
+      - run: node --test tests/marketplace.test.mjs
